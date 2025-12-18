@@ -29,3 +29,32 @@ const checkNumberFromString = (string) => {
 };
 
 checkNumberFromString(-15);
+
+
+// 5.16. ФУНКЦИИ ВОЗВРАЩАЮТСЯ
+
+const checkTime = (time) => {
+  const divisionTime = time.split(':');
+  const hours = parseInt(divisionTime[0]);
+  const minutes = parseInt(divisionTime[1]);
+  const totalMinutes = hours * 60 + minutes;
+
+  return totalMinutes;
+};
+
+const scheduleMeeting = (startWork, endWork, startMeeting, durationMetting) => {
+  const startWorkMinutes = checkTime(startWork);
+  const endWorkMinutes = checkTime(endWork);
+  const startMeetingMinutes = checkTime(startMeeting);
+  const endMeetingMinutes = startMeetingMinutes + durationMetting;
+
+  if (startMeetingMinutes >= startWorkMinutes && endMeetingMinutes <= endWorkMinutes) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+scheduleMeeting();
+
+
