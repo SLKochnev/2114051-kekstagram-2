@@ -1,47 +1,41 @@
 const sliderContainer = document.querySelector('.effect-level__slider');
 const effectValueInput = document.querySelector('.effect-level__value');
 const effectLevelContainer = document.querySelector('.img-upload__effect-level');
-const effectRadios = document.querySelectorAll('.effects__radio');
+const effectsList = document.querySelector('.effects__list');
 const imagePreview = document.querySelector('.img-upload__preview img');
 
 const effects = {
   none: {
-    name: 'none',
     min: 0,
     max: 0,
     step: 0,
     unit: ''
   },
   chrome: {
-    name: 'chrome',
     min: 0,
     max: 1,
     step: 0.1,
     unit: ''
   },
   sepia: {
-    name: 'sepia',
     min: 0,
     max: 1,
     step: 0.1,
     unit: ''
   },
   marvin: {
-    name: 'marvin',
     min: 0,
     max: 100,
     step: 1,
     unit: '%'
   },
   phobos: {
-    name: 'phobos',
     min: 0,
     max: 3,
     step: 0.1,
     unit: 'px'
   },
   heat: {
-    name: 'heat',
     min: 1,
     max: 3,
     step: 0.1,
@@ -61,23 +55,29 @@ const applyEffect = (value) => {
 
   let filterString = '';
 
-  if (currentEffect === 'chrome') {
-    filterString = `grayscale(${value})`;
-  } else if (currentEffect === 'sepia') {
-    filterString = `sepia(${value})`;
-  } else if (currentEffect === 'marvin') {
-    filterString = `invert(${value}%)`;
-  } else if (currentEffect === 'phobos') {
-    filterString = `blur(${value}px)`;
-  } else if (currentEffect === 'heat') {
-    filterString = `brightness(${value})`;
+  switch (currentEffect) {
+    case 'chrome':
+      filterString = `grayscale(${value})`;
+      break;
+    case 'sepia':
+      filterString = `sepia(${value})`;
+      break;
+    case 'marvin':
+      filterString = `invert(${value}%)`;
+      break;
+    case 'phobos':
+      filterString = `blur(${value}px)`;
+      break;
+    case 'heat':
+      filterString = `brightness(${value})`;
+      break;
   }
 
   imagePreview.style.filter = filterString;
 };
 
 const createSlider = () => {
-  if (typeof noUiSlider === 'undefined') {
+  if (!noUiSlider) {
     return;
   }
 
@@ -119,10 +119,10 @@ const changeEffect = (effectName) => {
 };
 
 const addEffectListeners = () => {
-  effectRadios.forEach((radio) => {
-    radio.addEventListener('change', (evt) => {
+  effectsList.addEventListener('change', (evt) => {
+    if (evt.target.type === 'radio') {
       changeEffect(evt.target.value);
-    });
+    }
   });
 };
 
@@ -130,9 +130,7 @@ const resetEffects = () => {
   currentEffect = 'none';
 
   const noneRadio = document.querySelector('#effect-none');
-  if (noneRadio) {
-    noneRadio.checked = true;
-  }
+  noneRadio.checked = true;
 
   effectLevelContainer.classList.add('hidden');
   imagePreview.style.filter = 'none';

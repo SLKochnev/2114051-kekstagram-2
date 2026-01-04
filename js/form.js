@@ -2,13 +2,15 @@ import { isEscapeKey } from './data.js';
 import { resetScale } from './scale.js';
 import { resetEffects } from './effects.js';
 
+const COMMENT_MAX_LENGTH = 140;
+const HASHTAG_MAX_LENGTH = 5;
+
 const fileInput = document.querySelector('.img-upload__input');
 const showPicture = document.querySelector('.img-upload__overlay');
 const buttonClose = document.querySelector('.img-upload__cancel');
 const hashtagInput = document.querySelector('.text__hashtags');
 const commentInput = document.querySelector('.text__description');
 const form = document.querySelector('.img-upload__form');
-
 
 const pristine = new Pristine(form, {
   classTo: 'img-upload__field-wrapper',
@@ -18,14 +20,15 @@ const pristine = new Pristine(form, {
   errorTextClass: 'pristine-error'
 });
 
-const validateComment = (value) => value.length <= 140;
-const regexp = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+const validateComment = (value) => value.length <= COMMENT_MAX_LENGTH;
 
 pristine.addValidator(
   commentInput,
   validateComment,
-  'Длина комментария не может составлять больше 140 символов'
+  `Длина комментария не может составлять больше ${COMMENT_MAX_LENGTH} символов`
 );
+
+const regexp = /^#[a-zа-яё0-9]{1,19}$/i;
 
 const validateHashtag = (value) => {
   if (value.trim() === '') {
@@ -35,14 +38,62 @@ const validateHashtag = (value) => {
   const hashtags = value.trim().split(' ');
   const nonEmptyHashtags = hashtags.filter((tag) => tag !== '');
 
-  if (nonEmptyHashtags.length > 5) {
-    return 'Нельзя указать больше пяти хэштегов';
+  if (nonEmptyHashtags.length > HASHTAG_MAX_LENGTH) {
+    return false;
   }
 
   for (let i = 0; i < nonEmptyHashtags.length; i++) {
     const tag = nonEmptyHashtags[i];
+
+    if (tag === '#') {
+      continue;
+    }
+
     if (!regexp.test(tag)) {
-      return 'Хэштег должен начинаться с # и содержать только буквы и цифры';
+      return false;
+    }
+  }
+
+  const lowerCaseTags = nonEmptyHashtags.map((tag) => tag.toLowerCase());
+  const uniqueTags = new Set(lowerCaseTags);
+
+  if (uniqueTags.size !== nonEmptyHashtags.length) {
+    return false;
+  }
+
+  return true;
+};
+
+const getHashtagError = (value) => {
+  if (value.trim() === '') {
+    return '';
+  }
+
+  const hashtags = value.trim().split(' ');
+  const nonEmptyHashtags = hashtags.filter((tag) => tag !== '');
+
+  if (nonEmptyHashtags.length > HASHTAG_MAX_LENGTH) {
+    return `Нельзя указать больше ${HASHTAG_MAX_LENGTH} хэштегов`;
+  }
+
+  for (let i = 0; i < nonEmptyHashtags.length; i++) {
+    const tag = nonEmptyHashtags[i];
+
+    if (tag === '#') {
+      continue;
+    }
+
+    if (tag[0] !== '#') {
+      return 'Хэштег должен начинаться с #';
+    }
+
+    if (tag.length < 2) {
+      return 'Хэштег не может состоять только из #';
+    }
+
+
+    if (!regexp.test(tag)) {
+      return 'Хэштег должен содержать только буквы и цифры после #';
     }
   }
 
@@ -53,13 +104,14 @@ const validateHashtag = (value) => {
     return 'Один и тот же хэштег не может быть использован дважды';
   }
 
-  return true;
+  return '';
 };
+
 
 pristine.addValidator(
   hashtagInput,
   validateHashtag,
-  'Не больше 5 хэштегов и каждый должен начинаться с #'
+  getHashtagError
 );
 
 const openForm = () => {
@@ -75,6 +127,7 @@ const closeForm = () => {
   fileInput.value = '';
   hashtagInput.value = '';
   commentInput.value = '';
+  pristine.reset();
   resetScale();
   resetEffects();
 };
@@ -105,13 +158,12 @@ const initForm = () => {
   });
 
   form.addEventListener('submit', (evt) => {
-    const hashtagsOk = validateHashtag(hashtagInput.value);
-    const commentOk = validateComment(commentInput.value);
+    evt.preventDefault();
 
-    if (hashtagsOk !== true || commentOk !== true) {
-      evt.preventDefault();
+    const isValid = pristine.validate();
 
-      alert(hashtagsOk !== true ? hashtagsOk : commentOk);
+    if (isValid) {
+      form.submit();
     }
   });
 };
