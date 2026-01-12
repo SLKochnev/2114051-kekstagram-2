@@ -17,8 +17,16 @@ const getMostDiscussedPhotos = () => {
 };
 
 const applyFilter = (filterType) => {
-  const container = document.querySelector('.pictures');
-  container.innerHTML = '';
+  const picturesContainer = document.querySelector('.pictures');
+
+  if (!picturesContainer) {
+    return;
+  }
+
+  const photoElements = picturesContainer.querySelectorAll('.picture');
+  photoElements.forEach((photo) => {
+    photo.remove();
+  });
 
   if (filterType === 'random') {
     currentPhotos = getRandomPhotos();
@@ -37,6 +45,7 @@ const initFilters = (photos) => {
   currentPhotos = [...photos];
 
   const filters = document.querySelector('.img-filters');
+
   if (!filters) {
     return;
   }

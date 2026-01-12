@@ -1,14 +1,47 @@
-import { loadAndShowPhotos } from './server.js';
+import { getData } from './api.js';
+import { renderPhotos } from './render.js';
+import { initBigPicture } from './bigPicture.js';
+import { initFilters } from './filters.js';
 import { initForm } from './form.js';
 import { initEffects } from './effects.js';
+import { ERROR_TIMEOUT } from './data.js';
 
-async function startApp() {
 
+const showLoadError = () => {
+  const template = document.querySelector('#data-error');
+  const error = template.content.cloneNode(true);
+  document.body.appendChild(error);
+
+  setTimeout(() => {
+    const errorElement = document.querySelector('.data-error');
+    if (errorElement) {
+      errorElement.remove();
+    }
+  }, ERROR_TIMEOUT);
+};
+
+
+const loadAndShowPhotos = async () => {
+  try {
+    const photos = await getData();
+
+    renderPhotos(photos);
+    initBigPicture(photos);
+    initFilters(photos);
+
+    return photos;
+
+  } catch (error) {
+    showLoadError();
+    return [];
+  }
+};
+
+
+const startApp = async () => {
   await loadAndShowPhotos();
-
   initForm();
-
   initEffects();
-}
+};
 
 startApp();

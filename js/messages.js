@@ -16,6 +16,7 @@ function showSuccess() {
 
   function onEsc(evt) {
     if (isEscapeKey(evt)) {
+      evt.stopPropagation();
       closeMessage();
     }
   }

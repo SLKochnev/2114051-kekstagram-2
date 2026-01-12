@@ -5,20 +5,22 @@ const bigPicture = document.querySelector('.big-picture');
 let currentComments = [];
 let shownComments = 0;
 
-const closeBigPicture = () => {
+function closeBigPicture() {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
+  document.removeEventListener('keydown', onEscKeydown);
+
   currentComments = [];
   shownComments = 0;
-};
+}
 
-const onEscKeydown = (evt) => {
+function onEscKeydown(evt){
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeBigPicture();
   }
-};
+}
 
 const showMoreComments = () => {
   const commentsContainer = bigPicture.querySelector('.social__comments');
@@ -27,7 +29,6 @@ const showMoreComments = () => {
     COMMENTS_PER_CLICK,
     currentComments.length - shownComments
   );
-
 
   for (let i = shownComments; i < shownComments + commentsToShow; i++) {
     const comment = currentComments[i];
@@ -65,7 +66,6 @@ const showMoreComments = () => {
 };
 
 const openBigPicture = (photo) => {
-
   currentComments = photo.comments;
   shownComments = 0;
 

@@ -33,22 +33,23 @@ pristine.addValidator(
 const regexp = /^#[a-zа-яё0-9]{1,19}$/i;
 
 const validateHashtag = (value) => {
-  if (value.trim() === '') {
+  const trimmedValue = value.trim();
+  if (trimmedValue === '') {
     return true;
   }
 
-  const hashtags = value.trim().split(' ');
-  const nonEmptyHashtags = hashtags.filter((tag) => tag !== '');
+  const hashtags = trimmedValue.split(' ');
+  const cleanHashtags = hashtags.filter((tag) => tag !== '');
 
-  if (nonEmptyHashtags.length > HASHTAG_MAX_LENGTH) {
+  if (cleanHashtags.length > HASHTAG_MAX_LENGTH) {
     return false;
   }
 
-  for (let i = 0; i < nonEmptyHashtags.length; i++) {
-    const tag = nonEmptyHashtags[i];
+  for (let i = 0; i < cleanHashtags.length; i++) {
+    const tag = cleanHashtags[i];
 
     if (tag === '#') {
-      continue;
+      return false;
     }
 
     if (!regexp.test(tag)) {
@@ -56,33 +57,30 @@ const validateHashtag = (value) => {
     }
   }
 
-  const lowerCaseTags = nonEmptyHashtags.map((tag) => tag.toLowerCase());
-  const uniqueTags = new Set(lowerCaseTags);
+  const lowerTags = cleanHashtags.map((tag) => tag.toLowerCase());
+  const uniqueTags = [...new Set(lowerTags)];
 
-  if (uniqueTags.size !== nonEmptyHashtags.length) {
-    return false;
-  }
-
-  return true;
+  return uniqueTags.length === cleanHashtags.length;
 };
 
 const getHashtagError = (value) => {
-  if (value.trim() === '') {
+  const trimmedValue = value.trim();
+  if (trimmedValue === '') {
     return '';
   }
 
-  const hashtags = value.trim().split(' ');
-  const nonEmptyHashtags = hashtags.filter((tag) => tag !== '');
+  const hashtags = trimmedValue.split(' ');
+  const cleanHashtags = hashtags.filter((tag) => tag !== '');
 
-  if (nonEmptyHashtags.length > HASHTAG_MAX_LENGTH) {
+  if (cleanHashtags.length > HASHTAG_MAX_LENGTH) {
     return `Нельзя указать больше ${HASHTAG_MAX_LENGTH} хэштегов`;
   }
 
-  for (let i = 0; i < nonEmptyHashtags.length; i++) {
-    const tag = nonEmptyHashtags[i];
+  for (let i = 0; i < cleanHashtags.length; i++) {
+    const tag = cleanHashtags[i];
 
     if (tag === '#') {
-      continue;
+      return 'Хэштег не может состоять только из #';
     }
 
     if (tag[0] !== '#') {
@@ -90,19 +88,19 @@ const getHashtagError = (value) => {
     }
 
     if (tag.length < 2) {
-      return 'Хэштег не может состоять только из #';
+      return 'Хэштег слишком короткий';
     }
 
     if (!regexp.test(tag)) {
-      return 'Хэштег должен содержать только буквы и цифры после #';
+      return 'Хэштег должен содержать только буквы и цифры';
     }
   }
 
-  const lowerCaseTags = nonEmptyHashtags.map((tag) => tag.toLowerCase());
-  const uniqueTags = new Set(lowerCaseTags);
+  const lowerTags = cleanHashtags.map((tag) => tag.toLowerCase());
+  const uniqueTags = [...new Set(lowerTags)];
 
-  if (uniqueTags.size !== nonEmptyHashtags.length) {
-    return 'Один и тот же хэштег не может быть использован дважды';
+  if (uniqueTags.length !== cleanHashtags.length) {
+    return 'Хэштеги не должны повторяться';
   }
 
   return '';
@@ -115,6 +113,9 @@ pristine.addValidator(
 );
 
 const openForm = () => {
+  hashtagInput.value = '';
+  commentInput.value = '';
+  pristine.reset();
   showPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onEscKeydown);
@@ -126,12 +127,6 @@ const closeForm = () => {
   document.removeEventListener('keydown', onEscKeydown);
 };
 
-const stopEscPropagation = (evt) => {
-  if (isEscapeKey(evt)) {
-    evt.stopPropagation();
-  }
-};
-
 function onEscKeydown(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
@@ -140,25 +135,73 @@ function onEscKeydown(evt) {
 }
 
 const resetForm = () => {
-  fileInput.value = '';
-  hashtagInput.value = '';
-  commentInput.value = '';
+  form.reset();
   pristine.reset();
   resetScale();
   resetEffects();
+
+  fileInput.value = '';
+
+  const image = document.querySelector('.img-upload__preview img');
+  const effectPreviews = document.querySelectorAll('.effects__preview');
+
+  image.src = 'img/upload-default-image.jpg';
+  effectPreviews.forEach((preview) => {
+    preview.style.backgroundImage = 'url("img/upload-default-image.jpg")';
+  });
+};
+
+const loadImageToForm = () => {
+  const file = fileInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = (evt) => {
+    const image = document.querySelector('.img-upload__preview img');
+    const effectPreviews = document.querySelectorAll('.effects__preview');
+
+    image.src = evt.target.result;
+
+    effectPreviews.forEach((preview) => {
+      preview.style.backgroundImage = `url(${evt.target.result})`;
+    });
+  };
+
+  reader.readAsDataURL(file);
 };
 
 const initForm = () => {
-  hashtagInput.addEventListener('keydown', stopEscPropagation);
-  commentInput.addEventListener('keydown', stopEscPropagation);
+  hashtagInput.addEventListener('keydown', (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.stopPropagation();
+    }
+  });
+
+  commentInput.addEventListener('keydown', (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.stopPropagation();
+    }
+  });
 
   buttonClose.addEventListener('click', () => {
     closeForm();
     resetForm();
   });
 
+  const uploadLabel = document.querySelector('.img-upload__label');
+  if (uploadLabel) {
+    uploadLabel.addEventListener('click', () => {
+      fileInput.value = '';
+    });
+  }
+
   fileInput.addEventListener('change', () => {
     openForm();
+    loadImageToForm();
   });
 
   form.addEventListener('submit', async (evt) => {
@@ -175,15 +218,12 @@ const initForm = () => {
 
       try {
         await sendData(formData);
-
         showSuccess();
         closeForm();
         resetForm();
-
       } catch (error) {
         showError();
       } finally {
-
         submitButton.disabled = false;
         submitButton.textContent = 'Опубликовать';
       }

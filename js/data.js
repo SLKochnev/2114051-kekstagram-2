@@ -5,6 +5,7 @@ const AVATAR_MIN = 1;
 const AVATAR_MAX = 6;
 const NAMES = ['Петя', 'Вася', 'Гриша', 'Юра', 'Слава', 'Миша', 'Марик', 'Антон', 'Дима'];
 const COMMENTS_PER_CLICK = 5;
+const ERROR_TIMEOUT = 5000;
 
 const DESCRIPTIONS = [
   'Мокры дождь',
@@ -79,5 +80,6 @@ export {
   isEscapeKey,
   COMMENTS_PER_CLICK,
   debounce,
-  throttle
+  throttle,
+  ERROR_TIMEOUT
 };
