@@ -1,20 +1,21 @@
 import { isEscapeKey, COMMENTS_PER_CLICK } from './data.js';
 
+const AVATAR_SIZE = 35;
+
 const bigPicture = document.querySelector('.big-picture');
 
 let currentComments = [];
 let shownComments = 0;
-const AVATAR_SIZE = 35;
 
-function closeBigPicture() {
+const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
-  document.removeEventListener('keydown', onDocumentKeydown);
+  document.cleanEventListener('keydown', onDocumentKeydown);
 
   currentComments = [];
   shownComments = 0;
-}
+};
 
 function onDocumentKeydown(evt) {
   if (isEscapeKey(evt)) {
@@ -23,7 +24,7 @@ function onDocumentKeydown(evt) {
   }
 }
 
-function showMoreComments() {
+const showMoreComments = () => {
   const commentsContainer = bigPicture.querySelector('.social__comments');
 
   const commentsToShow = Math.min(
@@ -64,9 +65,9 @@ function showMoreComments() {
   if (shownComments >= currentComments.length) {
     loadMoreButton.classList.add('hidden');
   }
-}
+};
 
-function openBigPicture(photo) {
+const openBigPicture = (photo) => {
   currentComments = photo.comments;
   shownComments = 0;
 
@@ -95,9 +96,9 @@ function openBigPicture(photo) {
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
-}
+};
 
-function initBigPicture(allPhotos) {
+const initBigPicture = (allPhotos) => {
   const miniPictures = document.querySelectorAll('.picture');
   const closeButton = document.querySelector('.big-picture__cancel');
 
@@ -114,6 +115,6 @@ function initBigPicture(allPhotos) {
   closeButton.addEventListener('click', () => {
     closeBigPicture();
   });
-}
+};
 
 export { initBigPicture };

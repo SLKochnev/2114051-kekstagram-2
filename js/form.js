@@ -130,11 +130,12 @@ function onDocumentKeydown(evt) {
     if (!hasOpenMessage) {
       evt.preventDefault();
       closeForm();
+      resetForm();
     }
   }
 }
 
-const resetForm = () => {
+function resetForm() {
   form.reset();
   pristine.reset();
   resetScale();
@@ -149,7 +150,7 @@ const resetForm = () => {
   effectPreviews.forEach((preview) => {
     preview.style.backgroundImage = 'url("img/upload-default-image.jpg")';
   });
-};
+}
 
 const loadImageToForm = () => {
   const file = fileInput.files[0];

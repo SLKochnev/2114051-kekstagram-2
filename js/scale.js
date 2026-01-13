@@ -9,15 +9,15 @@ const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
 const imagePreview = document.querySelector('.img-upload__preview img');
 
-function updateScale() {
+const updateScale = () => {
   scaleControlValue.value = `${currentScale}%`;
   imagePreview.style.transform = `scale(${currentScale / 100})`;
-}
+};
 
-function resetScale() {
+const resetScale = () => {
   currentScale = SCALE_DEFAULT;
   updateScale();
-}
+};
 
 smallerButton.addEventListener('click', () => {
   const newScale = currentScale - SCALE_STEP;

@@ -13,9 +13,9 @@ const showLoadError = () => {
   document.body.appendChild(error);
 
   setTimeout(() => {
-    const errorElement = document.querySelector('.data-error');
-    if (errorElement) {
-      errorElement.remove();
+    const errorMessage = document.querySelector('.data-error');
+    if (errorMessage) {
+      errorMessage.remove();
     }
   }, ERROR_TIMEOUT);
 };

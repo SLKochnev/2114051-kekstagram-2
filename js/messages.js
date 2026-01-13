@@ -1,6 +1,6 @@
 import { isEscapeKey } from './data.js';
 
-function showSuccess() {
+const showSuccess = () => {
   const template = document.querySelector('#success');
   const success = template.content.cloneNode(true);
   document.body.appendChild(success);
@@ -8,11 +8,11 @@ function showSuccess() {
   const message = document.querySelector('.success');
   const button = message.querySelector('.success__button');
 
-  function closeMessage() {
+  const closeMessage = () => {
     message.remove();
     document.removeEventListener('keydown', onDocumentKeydown);
-    document.removeEventListener('click', onOutsideClick);
-  }
+    document.removeEventListener('click', onDocumentClick);
+  };
 
   function onDocumentKeydown(evt) {
     if (isEscapeKey(evt)) {
@@ -21,7 +21,7 @@ function showSuccess() {
     }
   }
 
-  function onOutsideClick(evt) {
+  function onDocumentClick(evt) {
     if (evt.target === message) {
       closeMessage();
     }
@@ -29,10 +29,10 @@ function showSuccess() {
 
   button.addEventListener('click', closeMessage);
   document.addEventListener('keydown', onDocumentKeydown);
-  document.addEventListener('click', onOutsideClick);
-}
+  document.addEventListener('click', onDocumentClick);
+};
 
-function showError() {
+const showError = () => {
   const template = document.querySelector('#error');
   const error = template.content.cloneNode(true);
   document.body.appendChild(error);
@@ -40,11 +40,11 @@ function showError() {
   const message = document.querySelector('.error');
   const button = message.querySelector('.error__button');
 
-  function closeMessage() {
+  const closeMessage = () => {
     message.remove();
     document.removeEventListener('keydown', onDocumentKeydown);
-    document.removeEventListener('click', onOutsideClick);
-  }
+    document.removeEventListener('click', onDocumentClick);
+  };
 
   function onDocumentKeydown(evt) {
     if (isEscapeKey(evt)) {
@@ -53,7 +53,7 @@ function showError() {
     }
   }
 
-  function onOutsideClick(evt) {
+  function onDocumentClick(evt) {
     if (evt.target === message) {
       closeMessage();
     }
@@ -61,7 +61,7 @@ function showError() {
 
   button.addEventListener('click', closeMessage);
   document.addEventListener('keydown', onDocumentKeydown);
-  document.addEventListener('click', onOutsideClick);
-}
+  document.addEventListener('click', onDocumentClick);
+};
 
 export { showSuccess, showError };

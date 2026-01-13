@@ -1,4 +1,4 @@
-function renderPhotos(photoDescriptions) {
+const renderPhotos = (photoDescriptions) => {
   const template = document.querySelector('#picture');
   const container = document.querySelector('.pictures');
   const fragment = document.createDocumentFragment();
@@ -25,6 +25,6 @@ function renderPhotos(photoDescriptions) {
   }
 
   container.appendChild(fragment);
-}
+};
 
 export { renderPhotos };
