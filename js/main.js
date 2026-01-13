@@ -4,8 +4,8 @@ import { initBigPicture } from './bigPicture.js';
 import { initFilters } from './filters.js';
 import { initForm } from './form.js';
 import { initEffects } from './effects.js';
-import { ERROR_TIMEOUT } from './data.js';
 
+const ERROR_TIMEOUT = 5000;
 
 const showLoadError = () => {
   const template = document.querySelector('#data-error');

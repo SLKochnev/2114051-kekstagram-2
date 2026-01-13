@@ -1,6 +1,6 @@
 import { renderPhotos } from './render.js';
 import { initBigPicture } from './bigPicture.js';
-import { debounce } from './data.js';
+import { debounce } from './utils.js';
 
 const DELAY = 500;
 const PHOTOS_COUNT = 10;

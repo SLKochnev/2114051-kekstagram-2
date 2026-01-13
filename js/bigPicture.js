@@ -1,6 +1,7 @@
-import { isEscapeKey, COMMENTS_PER_CLICK } from './data.js';
+import { isEscapeKey } from './utils.js';
 
 const AVATAR_SIZE = 35;
+const COMMENTS_PER_CLICK = 5;
 
 const bigPicture = document.querySelector('.big-picture');
 
